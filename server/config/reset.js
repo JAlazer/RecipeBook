@@ -1,26 +1,29 @@
-import { recipes } from "../data/recipes";
-import { pool } from "./database";
+import { recipes } from "../data/recipes.js";
+import { pool } from "./database.js";
+import './dotenv.js';
 
 async function createRecipeTable() {
     const createRecipeQuery = `
-        DROP TABLE IF EXISTS recipes
+    DROP TABLE IF EXISTS recipes;
 
-        CREATE TYPE fooditem AS (
-            foodname TEXT NOT NULL
-            foodquantity TEXT NOT NULL
-        )
+    DROP TYPE IF EXISTS fooditem;
 
-        CREATE TABLE IF NOT EXISTS recipes (
-            id SERIAL PRIMARY KEY
-            mealname TEXT NOT NULL
-            foodsList fooditem[] NOT NULL
-            preptime INTEGER NOT NULL
-            cooktime INTEGER NOT NULL
-            servings INTEGER NOT NULL
-            dateadded DATE NOT NULL
-            dateupdated DATE NOT NULL
-        )
-    `
+    CREATE TYPE fooditem AS (
+        foodname TEXT,
+        foodquantity TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS recipes (
+        id SERIAL PRIMARY KEY,
+        mealname TEXT NOT NULL,
+        foodsList fooditem[] NOT NULL,
+        preptime INTEGER NOT NULL,
+        cooktime INTEGER NOT NULL,
+        servings INTEGER NOT NULL,
+        dateadded DATE NOT NULL,
+        dateupdated DATE NOT NULL
+    );
+`
 
     try {
         const result = await pool.query(createRecipeQuery);
@@ -31,29 +34,34 @@ async function createRecipeTable() {
 }
 
 async function seedRecipeTable() {
-    await createRecipeTable()
+    await createRecipeTable() 
 
     recipes.forEach((recipe) => {
+        const foodsListLiteral = `{${recipe.foodsList
+            .map((f) => `"(${f.foodName},${f.foodQuantity})"`)
+            .join(',')}}`;
+
+        const insertQuery = {
+            text: `INSERT INTO recipes (id, mealname, foodslist, preptime, cooktime, servings, dateadded, dateupdated)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+        }
+
         const values = [
             recipe.id,
             recipe.mealName,
-            recipe.foodsList,
+            foodsListLiteral,
             recipe.prepTime,
             recipe.cookTime,
             recipe.servings,
             recipe.DateAdded,
             recipe.DateUpdated
         ]
-        
-        const insertionQuery = {
-            text: 'INSERT INTO recipes (id, mealname, foodslist, preptime, cooktime, servings, dateadded, dateupdated) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)'
-        }
-        const result = await pool.query(insertionQuery, values, (error, result) => {
-            if (error) {
-                console.error(`Something went wrong with seeding ${recipe.mealName}!`, error)
-                return ;
-            }
 
+        pool.query(insertQuery, values, (err, res) => {
+            if (err) {
+                console.error(`Could not seed ${recipe.mealName}`, err)
+                return
+            }
             console.log(`${recipe.mealName} has been inserted!`)
         })
     })

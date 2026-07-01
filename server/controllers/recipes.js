@@ -1,4 +1,4 @@
-import { pool } from "../config/database";
+import { pool } from "../config/database.js";
 
 export async function getRecipes(req, res) {
     try{
@@ -7,7 +7,7 @@ export async function getRecipes(req, res) {
         `
 
         const result = await pool.query(selectionQuery); 
-        res.status(200).json(result.rows[0]);
+        res.status(200).json(result.rows);
     } catch (err) {
         res.status(409).json({error: err.message})
     }
@@ -23,7 +23,7 @@ export async function getRecipeById(req, res) {
 
         const result = await pool.query(selectionById)
 
-        console.log(`Got recipe: ${result.rows[0].mealName}`)
+        console.log(`Got recipe: ${result.rows[0].mealname}`)
         res.status(200).json(result.rows[0])
     } catch (error) {
         res.status(409).json({error: error.message})

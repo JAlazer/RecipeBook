@@ -4,7 +4,7 @@ Submitted by: **Johan Almanzar**
 
 About this web app: **A place where recipes are collected to be perfected. Anything less than perfect can be edited or deleted!**
 
-Time spent: **X** hours
+Time spent: **5** hours
 
 ## Required Features
 
