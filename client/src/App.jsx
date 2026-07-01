@@ -1,29 +1,29 @@
 import React from 'react'
 import { useRoutes } from 'react-router-dom'
 import Navigation from './components/Navigation'
-import ViewCars from './pages/ViewCars'
-import EditCar from './pages/EditCar'
-import CreateCar from './pages/CreateCar'
-import CarDetails from './pages/CarDetails'
 import './App.css'
+import CreateRecipe from './pages/CreateRecipe'
+import ViewRecipes from './pages/ViewRecipes'
+import RecipeDetails from './pages/RecipeDetails'
+import EditRecipe from './pages/EditRecipe'
 
 const App = () => {
   let element = useRoutes([
     {
       path: '/',
-      element: <CreateCar title='BOLT BUCKET | Customize' />
+      element: <CreateRecipe title='RECIPE BOOK' />
     },
     {
-      path:'/customcars',
-      element: <ViewCars title='BOLT BUCKET | Custom Cars' />
+      path:'/recipes',
+      element: <ViewRecipes title='RECIPE BOOK' />
     },
     {
-      path: '/customcars/:id',
-      element: <CarDetails title='BOLT BUCKET | View' />
+      path: '/recipes/:id',
+      element: <RecipeDetails title='RECIPE BOOK' />
     },
     {
       path: '/edit/:id',
-      element: <EditCar title='BOLT BUCKET | Edit' />
+      element: <EditRecipe title='RECIPE BOOK' />
     }
   ])
 
